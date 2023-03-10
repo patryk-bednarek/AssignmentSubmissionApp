@@ -1,0 +1,22 @@
+User (class -> database table)
+	- role (student, code reviewer, admin)
+	- cohort startDate
+	- assignments: List<Assignment>
+
+Assignment(class -> database table)
+	- status: String (pending submission, submitted, in review, needs update, completed)
+	- github URL: String
+	- branch: String
+	- codeReviewVideoUrl: String
+	- assignedTo: userId 
+
+Email Notification Service (class)
+	- messageBody
+	- subjectLine
+	- toAddress
+	- fromAddress
+ 
+UserService (class)
+ 
+ 
+
