@@ -1,8 +1,9 @@
 package com.coderscampus.AssignmentSubmissionApp.domain;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 @Entity // will create table called assignment (based on Class name)
+@Table(name = "assignment")
 public class Assignment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
