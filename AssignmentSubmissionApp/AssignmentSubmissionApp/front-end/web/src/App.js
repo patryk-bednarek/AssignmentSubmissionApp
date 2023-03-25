@@ -1,30 +1,42 @@
-import logo from './logo.svg';
 import './App.css';
+import {useEffect, useState} from "react";
+import {useLocalState} from "./util/useLocalStorage";
 
 function App() {
 
-    const reqBody = {
-        "username": "patryk",
-        "password": "asdfasdf"
-    }
+    const [jwt, setJwt] = useLocalState("", "jwt");
 
-    fetch('/api/auth/login', {
-        headers: {
-            "Content-Type": "application/json"
-        },
-        method: "post",
-        body: JSON.stringify(reqBody),
-    })
-        .then((response) => Promise.all([response.json(), response.headers]))
-        .then(([body,headers]) => {
-            const authValue = headers.get("authorization");
-            console.log(authValue);
-            console.log(body)
-        });
+
+    useEffect(() => {
+        if (!jwt) {
+
+            const reqBody = {
+                "username": "patryk",
+                "password": "asdfasdf"
+            }
+
+            fetch('/api/auth/login', {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                method: "post",
+                body: JSON.stringify(reqBody),
+            })
+                .then((response) => Promise.all([response.json(), response.headers]))
+                .then(([body, headers]) => {
+                    setJwt(headers.get("authorization"));
+
+                });
+        }
+    }, []); //empty deps bracket means: run this code once
+
+    useEffect(() => {
+
+    }, [jwt]);
 
   return (
     <div className="App">
-      dupa
+      <div>JWT value is {jwt}</div>
     </div>
   );
 }
