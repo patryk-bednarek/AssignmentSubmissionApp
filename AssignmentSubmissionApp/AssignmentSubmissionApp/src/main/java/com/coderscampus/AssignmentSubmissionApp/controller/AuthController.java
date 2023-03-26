@@ -44,6 +44,7 @@ public class AuthController {
                             jwtUtil.generateToken(user)
                     )
                     .body(user);
+
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
