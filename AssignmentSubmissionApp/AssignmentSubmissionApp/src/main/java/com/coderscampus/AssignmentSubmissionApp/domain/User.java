@@ -20,6 +20,10 @@ public class User implements UserDetails {
     private String username;
     @JsonIgnore
     private String password;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+    @JsonIgnore
+    private List<Authority> authorities = new ArrayList<>();
+
 
     public User() {
     }
@@ -75,7 +79,7 @@ public class User implements UserDetails {
         List<GrantedAuthority> roles = new ArrayList<>();
         roles.add(new Authority("ROLE_STUDENT"));
         //TODO auto-generated method stub
-        return roles;
+        return authorities;
     }
 
     @Override
@@ -87,4 +91,7 @@ public class User implements UserDetails {
         this.password = password;
     }
 
+    public void setAuthorities(List<Authority> authorities) {
+        this.authorities = authorities;
+    }
 }
