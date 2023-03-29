@@ -8,6 +8,7 @@ public class Assignment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String name;
     private String status;
     private String githubUrl;
     private String branch;
@@ -63,5 +64,13 @@ public class Assignment {
 
     public void setCodeReviewVideoUrl(String codeReviewVideoUrl) {
         this.codeReviewVideoUrl = codeReviewVideoUrl;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
