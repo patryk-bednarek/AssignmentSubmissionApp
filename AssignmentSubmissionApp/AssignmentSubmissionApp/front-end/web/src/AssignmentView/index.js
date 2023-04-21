@@ -8,18 +8,25 @@ const AssignmentView = () => {
     const [jwt, setJwt] = useLocalState("", "jwt");
     const [assignment, setAssignment] = useState({
         branch: "",
-        githubUrl: ""
+        githubUrl: "",
+        number: null,
+        status: null
     });
     const [assignmentEnums, setAssignmentEnums] = useState([]);
+    const [assignmentStatuses, setAssignmentStatuses] = useState([]);
 
 
-    function updateAssignment(prop, value) {
+    async function updateAssignment(prop, value) {
         const newAssignment = {...assignment};
         newAssignment [prop] = value;
-        setAssignment(newAssignment);
+        await setAssignment(newAssignment);
     }
 
     function save() {
+        // this implies that the student is submitting the assignment for the first time
+        if (assignment.status === assignmentStatuses[0].status) {
+            updateAssignment("status", assignmentStatuses[1].status);
+        }
         ajax(`/api/assignments/${assignmentId}`, "PUT", jwt, assignment).then(
             (assignmentData) => {
                 setAssignment(assignmentData);
@@ -34,18 +41,18 @@ const AssignmentView = () => {
                 if (assignmentData.githubUrl === null) assignmentData.githubUrl = "";
                 setAssignment(assignmentData);
                 setAssignmentEnums(assignmentResponse.assignmentEnums);
+                setAssignmentStatuses(assignmentResponse.statusEnums)
+                console.log(assignmentResponse.statusEnums)
             });
     }, []);
 
-    useEffect(() => {
-        console.log(assignmentEnums);
-    }, [assignmentEnums]);
 
     return (
         <Container className="mt-5">
             <Row className="d-flex align-items-center">
                 <Col >
-                    <h1>Assignment {assignmentId}</h1>
+                    {assignment.number ? (<h1>Assignment {assignment.number}</h1>) : (<></>)}
+
                 </Col>
                 <Col>
                     <Badge pill bg="info" style={{ fontSize: "1em" }}>
@@ -55,32 +62,34 @@ const AssignmentView = () => {
             </Row>
             {assignment ? (
                 <>
-                    <Form.Group as={Row} className="my-4" controlId="formPlaintextEmail">
+                    <Form.Group as={Row} className="my-4" controlId="assignmentName">
                         <Form.Label column sm="3" md="2">
                             Assignment number:
                         </Form.Label>
                         <Col sm="9" md="8" lg="6">
                             <DropdownButton
                                 as={ButtonGroup}
-                                id="assignmentName"
                                 variant={"info"}
-                                title="Assignment 1"
+                                title={assignment.number ? `Assignment ${assignment.number}` : "Select an Assignment"}
+                                onSelect={(selectedElement) => {
+                                    updateAssignment("number", selectedElement)
+                                }}
                             >
                                 {assignmentEnums.map((assignmentEnum) => (
                                     <Dropdown.Item eventKey={assignmentEnum.assignmentNum}>
-                                    {assignmentEnum.assignmentNum}
-                                </Dropdown.Item>))}
+                                            {assignmentEnum.assignmentNum}
+                                    </Dropdown.Item>
+                                ))}
                             </DropdownButton>
                         </Col>
                     </Form.Group>
 
-                    <Form.Group as={Row} className="my-4" controlId="formPlaintextEmail">
+                    <Form.Group as={Row} className="my-4" controlId="githubUrl">
                         <Form.Label column sm="3" md="2">
                             GitHub URL:
                         </Form.Label>
                         <Col sm="9" md="8" lg="6">
                             <Form.Control
-                                id="githubUrl"
                                 type="url"
                                 onChange={(event) => updateAssignment("githubUrl", event.target.value)}
                                 value={assignment.githubUrl}
@@ -88,13 +97,12 @@ const AssignmentView = () => {
                         </Col>
                     </Form.Group>
 
-                    <Form.Group as={Row} className="mb-3" controlId="formPlaintextEmail">
+                    <Form.Group as={Row} className="mb-3" controlId="branch">
                         <Form.Label column sm="3" md="2">
                             Branch:
                         </Form.Label>
                         <Col sm="9" md="8" lg="6">
                             <Form.Control
-                                id="branch"
                                 type="text"
                                 onChange={(event) => updateAssignment("branch", event.target.value)}
                                 value={assignment.branch}
