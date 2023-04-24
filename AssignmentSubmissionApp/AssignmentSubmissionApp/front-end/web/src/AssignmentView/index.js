@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useLocalState} from "../util/useLocalStorage";
 import ajax from "../Services/fetchService";
 import {Badge, Button, ButtonGroup, Col, Container, DropdownButton, Form, Row, Dropdown} from "react-bootstrap";
@@ -14,24 +14,37 @@ const AssignmentView = () => {
     });
     const [assignmentEnums, setAssignmentEnums] = useState([]);
     const [assignmentStatuses, setAssignmentStatuses] = useState([]);
+    const prevAssignmentValue = useRef(assignment);
 
 
     async function updateAssignment(prop, value) {
         const newAssignment = {...assignment};
         newAssignment [prop] = value;
-        await setAssignment(newAssignment);
+        setAssignment(newAssignment);
     }
 
     function save() {
-        // this implies that the student is submitting the assignment for the first time
         if (assignment.status === assignmentStatuses[0].status) {
             updateAssignment("status", assignmentStatuses[1].status);
+        } else {
+            persist();
         }
+    }
+
+    function persist() {
         ajax(`/api/assignments/${assignmentId}`, "PUT", jwt, assignment).then(
             (assignmentData) => {
                 setAssignment(assignmentData);
             });
     }
+
+
+    useEffect(() => {
+        if (prevAssignmentValue.current.status !== assignment.status) {
+            persist();
+        }
+        prevAssignmentValue.current = assignment;
+    }, [assignment]);
 
     useEffect(() => {
         ajax(`/api/assignments/${assignmentId}`, "GET", jwt)
@@ -42,7 +55,6 @@ const AssignmentView = () => {
                 setAssignment(assignmentData);
                 setAssignmentEnums(assignmentResponse.assignmentEnums);
                 setAssignmentStatuses(assignmentResponse.statusEnums)
-                console.log(assignmentResponse.statusEnums)
             });
     }, []);
 
@@ -76,7 +88,8 @@ const AssignmentView = () => {
                                 }}
                             >
                                 {assignmentEnums.map((assignmentEnum) => (
-                                    <Dropdown.Item eventKey={assignmentEnum.assignmentNum}>
+                                    <Dropdown.Item key={assignmentEnum.assignmentNum}
+                                                   eventKey={assignmentEnum.assignmentNum}>
                                             {assignmentEnum.assignmentNum}
                                     </Dropdown.Item>
                                 ))}
