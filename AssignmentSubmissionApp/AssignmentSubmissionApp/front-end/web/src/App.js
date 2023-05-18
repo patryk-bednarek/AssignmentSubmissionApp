@@ -8,18 +8,36 @@ import Login from "./Login";
 import PrivateRoute from "./PrivateRoute";
 import AssignmentView from "./AssignmentView";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import jwt_decode from "jwt-decode";
+import CodeReviewerDashboard from "./CodeReviewerDashboard";
 
 function App() {
     const [jwt, setJwt] = useLocalState("", "jwt");
+    const [roles, setRoles] = useState(getRolesFromJWT(jwt));
 
+
+    function getRolesFromJWT() {
+        //get role from jwt and assign via setRole()
+        if(jwt) {
+            const decodedJwt = jwt_decode(jwt);
+            return decodedJwt.authorities;
+        }
+        return [];
+    }
 
     return (
         <Routes>
             <Route path="/dashboard"
                    element={
-                       <PrivateRoute>
-                           <Dashboard/>
-                       </PrivateRoute>
+                       roles.find((role) => role === "ROLE_CODE_REVIEWER") ? (
+                           <PrivateRoute>
+                               <CodeReviewerDashboard/>
+                           </PrivateRoute>
+                       ) : (
+                           <PrivateRoute>
+                                <Dashboard/>
+                           </PrivateRoute>
+                       )
                    }
             />
             <Route

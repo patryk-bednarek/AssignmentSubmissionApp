@@ -1,5 +1,6 @@
 package com.coderscampus.AssignmentSubmissionApp.util;
 
+import com.coderscampus.AssignmentSubmissionApp.domain.Authority;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -12,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtil implements Serializable {
@@ -51,6 +53,10 @@ public class JwtUtil implements Serializable {
 
      public String generateToken(UserDetails userDetails) {
          Map<String, Object> claims = new HashMap<>();
+         claims.put("authorities", userDetails.getAuthorities()
+                                              .stream()
+                                              .map(auth -> auth.getAuthority())
+                                              .collect(Collectors.toList()));
          return doGenerateToken(claims, userDetails.getUsername());
      }
 

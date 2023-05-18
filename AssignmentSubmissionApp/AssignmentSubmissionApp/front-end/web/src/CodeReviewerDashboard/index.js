@@ -1,12 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {useLocalState} from "../util/useLocalStorage";
-import {Link} from "react-router-dom";
 import ajax from "../Services/fetchService";
-import {Badge, Button, Card, Col, Row} from "react-bootstrap";
+import {Badge, Button, Card, Col, Container, Row} from "react-bootstrap";
 
 
 
-const Dashboard = () => {
+const CodeReviewerDashboard = () => {
     const [jwt, setJwt] = useLocalState("", "jwt");
     const [assignments, setAssignments] = useState(null);
 
@@ -20,12 +19,12 @@ const Dashboard = () => {
     function createAssignment() {
         ajax("api/assignments", "POST", jwt)
             .then((assignment) => {
-            window.location.href = `/assignments/${assignment.id}`;
-        });
+                window.location.href = `/assignments/${assignment.id}`;
+            });
     }
 
     return (
-        <div style={{margin: '2em'}}>
+        <Container>
             <Row>
                 <Col>
                     <div  className="d-flex justify-content-end"
@@ -39,9 +38,13 @@ const Dashboard = () => {
                     </div>
                 </Col>
             </Row>
-            <div className="mb-4">
-                <Button size="lg" onClick={() => createAssignment()}>Submit new assignment</Button>
-            </div>
+
+            <Row>
+                <Col>
+                    <div className="h1">Code Reviewer Dashboard</div>
+                </Col>
+            </Row>
+
             {assignments ? (
                 <div className="d-grid gap-5"
                      style={{ gridTemplateColumns: "repeat(auto-fill, 18rem)"}}>
@@ -73,8 +76,8 @@ const Dashboard = () => {
                                     <Button
                                         variant="secondary"
                                         onClick={() => {
-                                        window.location.href = `/assignments/${assignment.id}`;
-                                    }}>Edit
+                                            window.location.href = `/assignments/${assignment.id}`;
+                                        }}>Edit
                                     </Button>
 
                                 </Card.Body>
@@ -87,9 +90,9 @@ const Dashboard = () => {
                 <></>
             )}
 
-        </div>
+        </Container>
 
     );
 };
 
-export default Dashboard;
+export default CodeReviewerDashboard;
