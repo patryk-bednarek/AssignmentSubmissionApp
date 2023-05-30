@@ -27,6 +27,12 @@
 .App-link {
   color: #61dafb;
 }
+.assignment-wrapper {
+  border: 2px dashed lightgray;
+  padding: 2em;
+  border-radius: 1em;
+  margin-top: 2em;
+}
 
 @keyframes App-logo-spin {
   from {

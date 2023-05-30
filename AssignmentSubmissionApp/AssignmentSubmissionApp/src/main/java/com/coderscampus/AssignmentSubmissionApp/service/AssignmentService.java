@@ -3,6 +3,7 @@ package com.coderscampus.AssignmentSubmissionApp.service;
 import com.coderscampus.AssignmentSubmissionApp.domain.Assignment;
 import com.coderscampus.AssignmentSubmissionApp.domain.User;
 import com.coderscampus.AssignmentSubmissionApp.enums.AssignmentStatusEnum;
+import com.coderscampus.AssignmentSubmissionApp.enums.AuthorityEnum;
 import com.coderscampus.AssignmentSubmissionApp.repository.AssignmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,17 @@ public class AssignmentService {
     }
 
     public Set<Assignment> findByUser(User user) {
-       return assignmentRepository.findByUser(user);
+
+        boolean hasCodeReviewerRole = user.getAuthorities()
+                .stream()
+                .filter(auth -> AuthorityEnum.ROLE_CODE_REVIEWER.name().equals(auth.getAuthority()))
+                .count() > 0;
+        if (hasCodeReviewerRole) {
+            // load assignments if you are a code reviewer role
+            return assignmentRepository.findByCodeReviewer(user);
+        }
+        //loads assignment if you are a student
+        return assignmentRepository.findByUser(user);
     }
 
     public Optional<Assignment> findById(Long id) {
